@@ -50,7 +50,7 @@ class _FormPageState extends State<FormPage> {
 
   void performLogin() {
     var _bytes = utf8.encode(_password + _salt);
-    var _digest = sha1.convert(_bytes);
+    var _digest = sha256.convert(_bytes);
 //    final snackbar = new SnackBar(
 //      content: new Text("盐 : $_salt, 密码 : $_password，加密后 $_digest"),
 //    );
