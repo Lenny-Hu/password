@@ -26,6 +26,7 @@ class _FormPageState extends State<FormPage> {
 
   String _password;
   String _salt;
+  String _dropdownValue = "One";
 
   @override
   void initState() {
@@ -62,8 +63,7 @@ class _FormPageState extends State<FormPage> {
             // 复制到粘贴版
             ClipboardData data = new ClipboardData(text: "$_digest");
             Clipboard.setData(data);
-          }
-      ),
+          }),
     );
     scaffoldKey.currentState.showSnackBar(snackbar);
   }
@@ -74,6 +74,9 @@ class _FormPageState extends State<FormPage> {
         key: scaffoldKey,
         appBar: new AppBar(
           title: new Text("密码生成器"),
+          actions: <Widget>[
+            new IconButton(icon: const Icon(Icons.info), onPressed: _gotoAbout),
+          ]
         ),
         body: new Padding(
           padding: const EdgeInsets.all(20.0),
@@ -81,16 +84,30 @@ class _FormPageState extends State<FormPage> {
             key: formKey,
             child: new Column(
               children: <Widget>[
+                DropdownButton<String>(
+                  value: _dropdownValue,
+                  onChanged: (String newValue) {
+                    setState(() {
+                      _dropdownValue = newValue;
+                    });
+                  },
+                  items: <String>['One', 'Two', 'Free', 'Four']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  })
+                  .toList(),
+                ),
                 new TextFormField(
                   decoration: new InputDecoration(labelText: "密码"),
-                  validator: (val) =>
-                  val.trim() == '' ? '请输入密码' : null,
+                  validator: (val) => val.trim() == '' ? '请输入密码' : null,
                   onSaved: (val) => _password = val.trim(),
                 ),
                 new TextFormField(
                   decoration: new InputDecoration(labelText: "盐"),
-                  validator: (val) =>
-                  val.trim() == '' ? '请输入盐' : null,
+                  validator: (val) => val.trim() == '' ? '请输入盐' : null,
                   onSaved: (val) => _salt = val.trim(),
 //                  obscureText: true, // 显示成星号
                 ),
@@ -104,12 +121,32 @@ class _FormPageState extends State<FormPage> {
                   ),
                   color: Colors.blue,
                   onPressed: _submit,
-                )
+                ),
               ],
             ),
           ),
         ));
   }
+
+  // 关于页面
+  void _gotoAbout() {
+    Navigator.of(context).push(
+      new MaterialPageRoute<void>(
+          builder: (BuildContext context) {
+            return new Scaffold(
+              appBar: new AppBar(
+                title: const Text('关于'),
+              ),
+              body: new Container(
+                // Center the content
+                child: new Center(
+                  // Add Text
+                  child: new Text("使用sha256生成常用的10位、6位密码"),
+                ),
+              ),
+            );
+          }
+      ),
+    );
+  }
 }
-
-
