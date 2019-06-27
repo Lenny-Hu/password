@@ -3,6 +3,8 @@ import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 
+import 'package:password/about.dart';
+
 void main() => runApp(new MyApp());
 
 class MyApp extends StatelessWidget {
@@ -11,6 +13,10 @@ class MyApp extends StatelessWidget {
     return new MaterialApp(
       theme: new ThemeData(),
       home: new FormPage(),
+      //注册路由表
+      routes: {
+        'about': (context) => AboutPage(),
+      } ,
     );
   }
 }
@@ -101,12 +107,20 @@ class _FormPageState extends State<FormPage> {
                   .toList(),
                 ),
                 new TextFormField(
-                  decoration: new InputDecoration(labelText: "密码"),
+                  decoration: new InputDecoration(
+                    labelText: "密码",
+                    hintText: "请输入密码",
+                    prefixIcon: Icon(Icons.lock),
+                  ),
                   validator: (val) => val.trim() == '' ? '请输入密码' : null,
                   onSaved: (val) => _password = val.trim(),
                 ),
                 new TextFormField(
-                  decoration: new InputDecoration(labelText: "盐"),
+                  decoration: new InputDecoration(
+                    labelText: "盐",
+                    hintText: "请输入盐，类似区别码",
+                    prefixIcon: Icon(Icons.android),
+                  ),
                   validator: (val) => val.trim() == '' ? '请输入盐' : null,
                   onSaved: (val) => _salt = val.trim(),
 //                  obscureText: true, // 显示成星号
@@ -114,14 +128,20 @@ class _FormPageState extends State<FormPage> {
                 new Padding(
                   padding: const EdgeInsets.only(top: 20.0),
                 ),
-                new RaisedButton(
-                  child: new Text(
-                    "生成",
-                    style: new TextStyle(color: Colors.white),
-                  ),
-                  color: Colors.blue,
-                  onPressed: _submit,
-                ),
+                new Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: new RaisedButton(
+                        child: new Text(
+                          "生成",
+                          style: new TextStyle(color: Colors.white),
+                        ),
+                        color: Colors.blue,
+                        onPressed: _submit,
+                      ),
+                    )
+                  ],
+                )
               ],
             ),
           ),
@@ -130,23 +150,6 @@ class _FormPageState extends State<FormPage> {
 
   // 关于页面
   void _gotoAbout() {
-    Navigator.of(context).push(
-      new MaterialPageRoute<void>(
-          builder: (BuildContext context) {
-            return new Scaffold(
-              appBar: new AppBar(
-                title: const Text('关于'),
-              ),
-              body: new Container(
-                // Center the content
-                child: new Center(
-                  // Add Text
-                  child: new Text("使用sha256生成常用的10位、6位密码"),
-                ),
-              ),
-            );
-          }
-      ),
-    );
+    Navigator.pushNamed(context, 'about');
   }
 }
