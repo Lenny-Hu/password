@@ -161,7 +161,7 @@ class _FormPageState extends State<FormPage> {
                 new TextFormField(
                   decoration: new InputDecoration(
                     labelText: "密码",
-                    hintText: "请输入密码（两头的空格会被移除）",
+                    hintText: "支持中文，首尾空格会被移除",
                     prefixIcon: Icon(Icons.lock),
                     suffixIcon: IconButton(
                       icon: Icon(_pwdObscureText ? Icons.no_encryption : Icons.remove_red_eye),
@@ -180,7 +180,7 @@ class _FormPageState extends State<FormPage> {
                 new TextFormField(
                   decoration: new InputDecoration(
                     labelText: "盐",
-                    hintText: "加点盐，生成不同的密码",
+                    hintText: "加点盐，生成更安全的密码",
                     prefixIcon: Icon(Icons.assistant_photo),
                     suffixIcon: IconButton( // TODO 此处待优化
                         icon: Icon(_saltObscureText ? Icons.no_encryption : Icons.remove_red_eye),
