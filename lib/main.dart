@@ -30,6 +30,10 @@ class _FormPageState extends State<FormPage> {
   final scaffoldKey = new GlobalKey<ScaffoldState>();
   final formKey = new GlobalKey<FormState>();
 
+  // 控制输入框显示星号还是明文
+  bool _pwdObscureText = true;
+  bool _saltObscureText = true;
+
   String _password;
   String _salt;
   String _selectedType; // 下拉菜单（截取长度）
@@ -159,20 +163,36 @@ class _FormPageState extends State<FormPage> {
                     labelText: "密码",
                     hintText: "请输入密码（两头的空格会被移除）",
                     prefixIcon: Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      icon: Icon(_pwdObscureText ? Icons.no_encryption : Icons.remove_red_eye),
+                      onPressed: () {
+                        setState(() {
+                          _pwdObscureText = !_pwdObscureText;
+                        });
+                      }
+                    ),
                   ),
                   validator: (val) => val.trim().isEmpty ? '请输入密码' : null,
                   onSaved: (val) => _password = val.trim(),
-                  obscureText: true, // 显示成星号
+                  obscureText: _pwdObscureText, // 显示成星号
                 ),
                 new TextFormField(
                   decoration: new InputDecoration(
                     labelText: "盐",
                     hintText: "加点盐，生成不同的密码",
                     prefixIcon: Icon(Icons.assistant_photo),
+                    suffixIcon: IconButton( // TODO 此处待优化
+                        icon: Icon(_saltObscureText ? Icons.no_encryption : Icons.remove_red_eye),
+                        onPressed: () {
+                          setState(() {
+                            _saltObscureText = !_saltObscureText;
+                          });
+                        }
+                    ),
                   ),
                   validator: (val) => val.trim().isEmpty ? '请输入盐' : null,
                   onSaved: (val) => _salt = val.trim(),
-                  obscureText: true, // 显示成星号
+                  obscureText: _saltObscureText, // 显示成星号
                 ),
                 new Padding(
                   padding: const EdgeInsets.only(top: 20.0),
