@@ -175,6 +175,7 @@ class _FormPageState extends State<FormPage> {
                   validator: (val) => val.trim().isEmpty ? '请输入密码' : null,
                   onSaved: (val) => _password = val.trim(),
                   obscureText: _pwdObscureText, // 显示成星号
+                  keyboardType: TextInputType.text,
                 ),
                 new TextFormField(
                   decoration: new InputDecoration(
@@ -193,6 +194,7 @@ class _FormPageState extends State<FormPage> {
                   validator: (val) => val.trim().isEmpty ? '请输入盐' : null,
                   onSaved: (val) => _salt = val.trim(),
                   obscureText: _saltObscureText, // 显示成星号
+                  keyboardType: TextInputType.text, // 好像没啥用
                 ),
                 new Padding(
                   padding: const EdgeInsets.only(top: 20.0),
