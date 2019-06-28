@@ -114,6 +114,7 @@ class _FormPageState extends State<FormPage> {
             Clipboard.setData(data);
           }),
     );
+    scaffoldKey.currentState.hideCurrentSnackBar();
     scaffoldKey.currentState.showSnackBar(snackbar);
   }
 
