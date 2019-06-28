@@ -13,8 +13,17 @@ class AboutPage extends StatelessWidget {
         child: new Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Image.asset("images/flutter.png",),
-            Text("使用sha256生成常用的10位、6位密码"),
+            Image.asset(
+              "images/flutter.png",
+              width: 50.0,
+            ),
+            new Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+            ),
+            Text("使用Sha256生成常用的10位、6位数字密码"),
+            new Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+            ),
             Text("by Flutter & Dart")
           ],
         ),

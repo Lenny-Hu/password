@@ -32,11 +32,19 @@ class _FormPageState extends State<FormPage> {
 
   String _password;
   String _salt;
-  String _dropdownValue = "One";
+  String _selectedType; // 下拉菜单（截取长度）
+  Map _typeMap = {
+    '10': '前十位(首个字母大写)',
+    '6': '前六位数字',
+    '0': '全部'
+  };
+  List<DropdownMenuItem<String>> _typeItems;
 
   @override
-  void initState() {
+  void initState() { // 相当于vue生命周期的create()
     // TODO: implement initState
+    _typeItems = buildAndGetTypeItems(_typeMap); // 获取设置的项
+    _selectedType = _typeItems[0].value; // 默认选中第一项
     super.initState();
   }
 
@@ -51,27 +59,67 @@ class _FormPageState extends State<FormPage> {
 
     if (form.validate()) {
       form.save();
-      performLogin();
+      _generatePwd();
     }
   }
 
-  void performLogin() {
+  void _generatePwd() {
+    String _pwd;
+    String _newPwd = '';
+    print('密码<$_password>盐<$_salt>');
     var _bytes = utf8.encode(_password + _salt);
-    var _digest = sha256.convert(_bytes);
-//    final snackbar = new SnackBar(
-//      content: new Text("盐 : $_salt, 密码 : $_password，加密后 $_digest"),
-//    );
+    _pwd = sha256.convert(_bytes).toString();
+
+    // 根据type值进行处理
+    switch (_selectedType) {
+      case '6':
+        for (var i = 0; i < _pwd.length; i++) {
+          
+          if (_newPwd.length >= 6) {
+            break;
+          }
+          if (_pwd[i].contains(new RegExp('\\d'))) {
+            _newPwd += _pwd[i];
+          }
+        }
+        break;
+
+      case '10':
+        _pwd = _pwd.substring(0, 10);
+        var _changed = false;
+        for (var i = 0; i < _pwd.length; i++) {
+          if (!_changed & _pwd[i].contains(new RegExp('[a-z]'))) {
+            _newPwd += _pwd[i].toUpperCase();
+            _changed = true;
+          } else {
+             _newPwd += _pwd[i];
+          }
+        }
+        break;
+      default:
+        _newPwd = _pwd;
+    }
+
     final snackbar = new SnackBar(
-      content: new Text('$_digest'),
+      content: new Text('$_newPwd'),
       action: new SnackBarAction(
           label: '复制',
           onPressed: () {
             // 复制到粘贴版
-            ClipboardData data = new ClipboardData(text: "$_digest");
+            ClipboardData data = new ClipboardData(text: "$_newPwd");
             Clipboard.setData(data);
           }),
     );
     scaffoldKey.currentState.showSnackBar(snackbar);
+  }
+
+  // 生成下拉选项
+  List<DropdownMenuItem<String>> buildAndGetTypeItems(Map _typeMap) {
+    List<DropdownMenuItem<String>> items = new List();
+    _typeMap.forEach((k, v) {
+      items.add(new DropdownMenuItem(value: k, child: new Text(v)));
+    });
+    return items;
   }
 
   @override
@@ -90,40 +138,41 @@ class _FormPageState extends State<FormPage> {
             key: formKey,
             child: new Column(
               children: <Widget>[
-                DropdownButton<String>(
-                  value: _dropdownValue,
-                  onChanged: (String newValue) {
-                    setState(() {
-                      _dropdownValue = newValue;
-                    });
-                  },
-                  items: <String>['One', 'Two', 'Free', 'Four']
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  })
-                  .toList(),
+                new Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButton<String>(
+                        isExpanded: true,
+                        value: _selectedType,
+                        onChanged: (String newValue) {
+                          setState(() {
+                            _selectedType = newValue;
+                          });
+                        },
+                        items: _typeItems
+                      ),
+                    )
+                  ]
                 ),
                 new TextFormField(
                   decoration: new InputDecoration(
                     labelText: "密码",
-                    hintText: "请输入密码",
+                    hintText: "请输入密码（两头的空格会被移除）",
                     prefixIcon: Icon(Icons.lock),
                   ),
-                  validator: (val) => val.trim() == '' ? '请输入密码' : null,
+                  validator: (val) => val.trim().isEmpty ? '请输入密码' : null,
                   onSaved: (val) => _password = val.trim(),
+                  obscureText: true, // 显示成星号
                 ),
                 new TextFormField(
                   decoration: new InputDecoration(
                     labelText: "盐",
-                    hintText: "请输入盐，类似区别码",
-                    prefixIcon: Icon(Icons.android),
+                    hintText: "加点盐，生成不同的密码",
+                    prefixIcon: Icon(Icons.assistant_photo),
                   ),
-                  validator: (val) => val.trim() == '' ? '请输入盐' : null,
+                  validator: (val) => val.trim().isEmpty ? '请输入盐' : null,
                   onSaved: (val) => _salt = val.trim(),
-//                  obscureText: true, // 显示成星号
+                  obscureText: true, // 显示成星号
                 ),
                 new Padding(
                   padding: const EdgeInsets.only(top: 20.0),
