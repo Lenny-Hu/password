@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
-
 import 'package:easyPassword/about.dart';
 
 void main() => runApp(new MyApp());
@@ -104,12 +103,23 @@ class _FormPageState extends State<FormPage> {
         _newPwd = _pwd;
     }
 
+    // web暂无法实现写入粘贴板，用表单输入框代替（可手动复制）
+    TextEditingController _pwdCtrl = TextEditingController();
+    _pwdCtrl.text = _newPwd;
+
     final snackbar = new SnackBar(
-      content: new Text('$_newPwd'),
+      // content: new Text('$_newPwd'),
+      content: TextField(
+        controller: _pwdCtrl,
+        enabled: true,
+        readOnly: false,
+        // autofocus: true,
+        enableInteractiveSelection: true,
+      ),
       action: new SnackBarAction(
           label: '复制',
           onPressed: () {
-            // 复制到粘贴版
+            // 复制到粘贴版，web下无法复制到粘贴板
             ClipboardData data = new ClipboardData(text: "$_newPwd");
             Clipboard.setData(data);
           }),
