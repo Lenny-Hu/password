@@ -1,0 +1,11 @@
+{
+  "name": "easy password",
+  "manifest_version": 2,
+  "version": "1.0",
+  "description": "简单的方式得到安全可靠的密码",
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "browser_action": {
+    "default_icon": "assets/images/app-inco.png",
+    "default_popup": "index.html"
+  }
+}

@@ -3,7 +3,7 @@ import 'package:crypto/crypto.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 
-import 'package:password/about.dart';
+import 'package:easyPassword/about.dart';
 
 void main() => runApp(new MyApp());
 
