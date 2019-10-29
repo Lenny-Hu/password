@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "build:crx": "gulp crx",
+    "build:web": "gulp web"
+  },
   "devDependencies": {
     "gulp": "^4.0.2"
   }
