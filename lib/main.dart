@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
+import 'dart:html' show document;
 import 'package:flutter/services.dart';
 import 'package:easyPassword/about.dart';
 
@@ -103,23 +104,33 @@ class _FormPageState extends State<FormPage> {
         _newPwd = _pwd;
     }
 
-    // web暂无法实现写入粘贴板，用表单输入框代替（可手动复制）
+    // 使用输入框展示密码，同时选中输入框中的密码
     TextEditingController _pwdCtrl = TextEditingController();
     _pwdCtrl.text = _newPwd;
+    _pwdCtrl.selection = TextSelection(
+      baseOffset: 0,
+      extentOffset: _pwdCtrl.text.length
+    );
+    FocusNode focusNode = new FocusNode();
 
     final snackbar = new SnackBar(
-      // content: new Text('$_newPwd'),
       content: TextField(
         controller: _pwdCtrl,
+        focusNode: focusNode,
         enabled: true,
         readOnly: false,
-        // autofocus: true,
-        enableInteractiveSelection: true,
+        autofocus: true,
       ),
+      onVisible: () {
+        // 让密码框获得焦点
+        FocusScope.of(context).requestFocus(focusNode);
+      },
       action: new SnackBarAction(
           label: '复制',
           onPressed: () {
-            // 复制到粘贴版，web下无法复制到粘贴板
+            // web复制到粘贴板
+            document.execCommand('Copy');
+            // 客户端复制到粘贴板
             ClipboardData data = new ClipboardData(text: "$_newPwd");
             Clipboard.setData(data);
           }),
