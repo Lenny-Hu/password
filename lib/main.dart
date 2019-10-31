@@ -34,6 +34,9 @@ class _FormPageState extends State<FormPage> {
   bool _pwdObscureText = true;
   bool _saltObscureText = true;
 
+  // 是否添加固定特殊字符下划线
+  bool _switchSelected = false;
+
   String _password;
   String _salt;
   String _selectedType; // 下拉菜单（截取长度）
@@ -104,6 +107,11 @@ class _FormPageState extends State<FormPage> {
         _newPwd = _pwd;
     }
 
+    // 特殊字符
+    if (_switchSelected) {
+      _newPwd = '_' + _newPwd + '_';
+    }
+
     // 使用输入框展示密码，同时选中输入框中的密码
     TextEditingController _pwdCtrl = TextEditingController();
     _pwdCtrl.text = _newPwd;
@@ -158,87 +166,108 @@ class _FormPageState extends State<FormPage> {
             new IconButton(icon: const Icon(Icons.info), onPressed: _gotoAbout),
           ]
         ),
-        body: new Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: new Form(
-            key: formKey,
-            child: new Column(
-              children: <Widget>[
-                new Row(
-                  children: [
-                    Expanded(
-                      child: DropdownButton<String>(
-                        isExpanded: true,
-                        value: _selectedType,
-                        onChanged: (String newValue) {
-                          setState(() {
-                            _selectedType = newValue;
-                          });
-                        },
-                        items: _typeItems
-                      ),
-                    )
-                  ]
-                ),
-                new TextFormField(
-                  decoration: new InputDecoration(
-                    labelText: "密码",
-                    hintText: "支持中文，首尾空格会被移除",
-                    prefixIcon: Icon(Icons.lock),
-                    suffixIcon: IconButton(
-                      icon: Icon(_pwdObscureText ? Icons.no_encryption : Icons.remove_red_eye),
-                      onPressed: () {
-                        setState(() {
-                          _pwdObscureText = !_pwdObscureText;
-                        });
-                      }
-                    ),
+        body: Container(
+          alignment: Alignment.center,
+          padding: EdgeInsets.all(20.0),
+          child: Container(
+            constraints: BoxConstraints(
+              maxWidth: 700
+            ),
+            child: new Form(
+              key: formKey,
+              child: new Column(
+                children: <Widget>[
+                  new Row(
+                    children: [
+                      Expanded(
+                        child: DropdownButton<String>(
+                          icon: Icon(Icons.expand_more),
+                          isExpanded: true,
+                          value: _selectedType,
+                          onChanged: (String newValue) {
+                            setState(() {
+                              _selectedType = newValue;
+                            });
+                          },
+                          items: _typeItems
+                        ),
+                      )
+                    ]
                   ),
-                  validator: (val) => val.trim().isEmpty ? '请输入密码' : null,
-                  onSaved: (val) => _password = val.trim(),
-                  obscureText: _pwdObscureText, // 显示成星号
-                  keyboardType: TextInputType.text,
-                ),
-                new TextFormField(
-                  decoration: new InputDecoration(
-                    labelText: "盐",
-                    hintText: "加点盐，生成更安全的密码",
-                    prefixIcon: Icon(Icons.assistant_photo),
-                    suffixIcon: IconButton( // TODO 此处待优化
-                        icon: Icon(_saltObscureText ? Icons.no_encryption : Icons.remove_red_eye),
+                  new TextFormField(
+                    decoration: new InputDecoration(
+                      labelText: "密码",
+                      hintText: "支持中文，首尾空格会被移除",
+                      prefixIcon: Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                        icon: Icon(_pwdObscureText ? Icons.no_encryption : Icons.remove_red_eye),
                         onPressed: () {
                           setState(() {
-                            _saltObscureText = !_saltObscureText;
+                            _pwdObscureText = !_pwdObscureText;
                           });
                         }
-                    ),
-                  ),
-                  validator: (val) => val.trim().isEmpty ? '请输入盐' : null,
-                  onSaved: (val) => _salt = val.trim(),
-                  obscureText: _saltObscureText, // 显示成星号
-                  keyboardType: TextInputType.text, // 好像没啥用
-                ),
-                new Padding(
-                  padding: const EdgeInsets.only(top: 20.0),
-                ),
-                new Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: new RaisedButton(
-                        child: new Text(
-                          "生成",
-                          style: new TextStyle(color: Colors.white),
-                        ),
-                        color: Colors.blue,
-                        onPressed: _submit,
                       ),
-                    )
-                  ],
-                )
-              ],
+                    ),
+                    validator: (val) => val.trim().isEmpty ? '请输入密码' : null,
+                    onSaved: (val) => _password = val.trim(),
+                    obscureText: _pwdObscureText, // 显示成星号
+                    keyboardType: TextInputType.text,
+                  ),
+                  new TextFormField(
+                    decoration: new InputDecoration(
+                      labelText: "盐",
+                      hintText: "加点盐，生成更安全的密码",
+                      prefixIcon: Icon(Icons.assistant_photo),
+                      suffixIcon: IconButton( // TODO 此处待优化
+                          icon: Icon(_saltObscureText ? Icons.no_encryption : Icons.remove_red_eye),
+                          onPressed: () {
+                            setState(() {
+                              _saltObscureText = !_saltObscureText;
+                            });
+                          }
+                      ),
+                    ),
+                    validator: (val) => val.trim().isEmpty ? '请输入盐' : null,
+                    onSaved: (val) => _salt = val.trim(),
+                    obscureText: _saltObscureText, // 显示成星号
+                    keyboardType: TextInputType.text, // 好像没啥用
+                  ),
+                  new Padding(
+                    padding: const EdgeInsets.only(top: 20.0),
+                  ),
+                  new Row(
+                    children: <Widget>[
+                      Switch(
+                        value: _switchSelected,
+                        onChanged: (v) {
+                          setState(() {
+                            _switchSelected = v;
+                          });
+                        },
+                      ),
+                      Text('添加特殊字符')
+                    ],
+                  ),
+                  new Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: new RaisedButton(
+                          child: new Text(
+                            "生 成",
+                            style: new TextStyle(color: Colors.white),
+                          ),
+                          color: Colors.blue,
+                          onPressed: _submit,
+                        ),
+                      )
+                    ],
+                  )
+                ],
+              ),
             ),
-          ),
-        ));
+          )
+        )
+    );
   }
 
   // 关于页面
